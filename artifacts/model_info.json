@@ -1,0 +1,40 @@
+{
+    "best_model_name": "MLP",
+    "best_params": {
+        "classifier__activation": "relu",
+        "classifier__alpha": 0.0001,
+        "classifier__hidden_layer_sizes": [
+            32,
+            16
+        ]
+    },
+    "target_mapping": {
+        "Movie": 0,
+        "TV Show": 1
+    },
+    "positive_class": "TV Show",
+    "negative_class": "Movie",
+    "feature_columns": [
+        "release_year",
+        "year_added",
+        "month_added",
+        "num_genres",
+        "added_delay",
+        "rating",
+        "country_first"
+    ],
+    "numeric_features": [
+        "release_year",
+        "year_added",
+        "month_added",
+        "num_genres",
+        "added_delay"
+    ],
+    "categorical_features": [
+        "rating",
+        "country_first"
+    ],
+    "train_size": 6605,
+    "test_size": 2202,
+    "selection_criterion": "Maior F1-score no conjunto de teste"
+}
