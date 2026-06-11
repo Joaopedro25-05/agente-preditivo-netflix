@@ -1,0 +1,20 @@
+﻿O dataset Netflix Movies and TV Shows foi obtido no Kaggle e contém informações sobre títulos disponíveis na Netflix.
+
+Cada registro representa um título do catálogo, podendo ser um filme ou uma série/programa de TV. A base contém atributos como identificador do título, tipo do conteúdo, título, diretor, elenco, país de origem, data de adição à plataforma, ano de lançamento, classificação indicativa, duração, categorias/listagens e descrição textual.
+
+Neste projeto, a variável alvo é type, tratada como uma classificação binária:
+- Movie = 0
+- TV Show = 1
+
+O objetivo do modelo preditivo é estimar se um novo registro informado pelo usuário possui características mais próximas de um filme ou de uma série/programa de TV, usando variáveis derivadas e tratadas a partir da base original.
+
+Variáveis utilizadas pelo modelo:
+- release_year: ano de lançamento do título;
+- year_added: ano em que o título foi adicionado à Netflix;
+- month_added: mês em que o título foi adicionado à Netflix;
+- num_genres: quantidade de categorias/gêneros associados ao título;
+- added_delay: diferença entre o ano de adição à Netflix e o ano de lançamento;
+- rating: classificação indicativa;
+- country_first: primeiro país listado no campo country.
+
+As variáveis duration, duration_num e listed_in não são usadas diretamente no treinamento principal porque podem conter informação muito próxima da classe alvo, principalmente porque filmes normalmente aparecem com duração em minutos, enquanto séries aparecem com quantidade de temporadas. Isso poderia gerar vazamento de informação e inflar artificialmente as métricas.
