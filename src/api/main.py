@@ -1,8 +1,10 @@
 from typing import Any
+from unittest import result
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 
+from src.llm.gemini_agent import generate_prediction_explanation
 from src.models.predict_model import load_model_info, predict_single
 
 
@@ -70,6 +72,7 @@ class PredictionResponse(BaseModel):
     probability: float | None
     model_used: str
     input_data: dict[str, Any]
+    explanation: str
 
 
 @app.get("/")
@@ -116,6 +119,7 @@ def predict(request: PredictionRequest) -> dict:
     try:
         input_data = request.model_dump()
         result = predict_single(input_data)
+        result["explanation"] = generate_prediction_explanation(result)
         return result
 
     except ValueError as error:
