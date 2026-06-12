@@ -6,7 +6,10 @@ from google import genai
 from google.genai import types
 
 from src.data.dataset_context import build_dataset_context_text
-
+from src.data.dataset_query import (
+    answer_title_search_question,
+    is_title_search_question,
+)
 
 OUT_OF_SCOPE_MESSAGE = (
     "Não posso responder essa pergunta, pois ela está fora do escopo deste agente. "
@@ -150,6 +153,9 @@ def generate_dataset_chat_response(user_question: str) -> str:
     - system prompt restritivo;
     - fallback caso a API falhe.
     """
+    if is_title_search_question(user_question):
+        return answer_title_search_question(user_question)
+
     if not is_question_related_to_project(user_question):
         return OUT_OF_SCOPE_MESSAGE
 
