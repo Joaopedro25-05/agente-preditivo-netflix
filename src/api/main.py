@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 from src.llm.gemini_agent import generate_prediction_explanation
 from src.models.predict_model import load_model_info, predict_single
+from src.llm.dataset_chat_agent import generate_dataset_chat_response
 
 
 app = FastAPI(
@@ -74,6 +75,25 @@ class PredictionResponse(BaseModel):
     input_data: dict[str, Any]
     explanation: str
 
+class ChatRequest(BaseModel):
+    """
+    Mensagem enviada pelo usuário ao agente especialista.
+    """
+
+    message: str = Field(
+        ...,
+        min_length=1,
+        description="Pergunta do usuário sobre o dataset ou sobre o projeto.",
+    )
+
+
+class ChatResponse(BaseModel):
+    """
+    Resposta retornada pelo agente especialista.
+    """
+
+    response: str
+
 
 @app.get("/")
 def root() -> dict:
@@ -138,4 +158,31 @@ def predict(request: PredictionRequest) -> dict:
         raise HTTPException(
             status_code=500,
             detail=f"Erro inesperado ao realizar a predição: {error}",
+        ) from error
+    
+@app.post("/chat", response_model=ChatResponse)
+def chat(request: ChatRequest) -> dict:
+    """
+    Recebe uma pergunta do usuário e retorna uma resposta do agente especialista.
+
+    O agente deve responder apenas sobre:
+    - dataset Netflix Movies and TV Shows;
+    - colunas da base;
+    - variável alvo;
+    - pré-processamento;
+    - modelos treinados;
+    - métricas;
+    - funcionamento da solução.
+    """
+    try:
+        response = generate_dataset_chat_response(request.message)
+
+        return {
+            "response": response,
+        }
+
+    except Exception as error:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erro inesperado ao consultar o agente especialista: {error}",
         ) from error
