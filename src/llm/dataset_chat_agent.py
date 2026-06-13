@@ -11,6 +11,11 @@ from src.data.dataset_query import (
     is_title_search_question,
 )
 
+from src.models.chat_prediction import (
+    answer_prediction_request,
+    is_prediction_request,
+)
+
 OUT_OF_SCOPE_MESSAGE = (
     "Não posso responder essa pergunta, pois ela está fora do escopo deste agente. "
     "Este chat responde apenas sobre o dataset Netflix Movies and TV Shows, "
@@ -153,6 +158,9 @@ def generate_dataset_chat_response(user_question: str) -> str:
     - system prompt restritivo;
     - fallback caso a API falhe.
     """
+    if is_prediction_request(user_question):
+        return answer_prediction_request(user_question)
+    
     if is_title_search_question(user_question):
         return answer_title_search_question(user_question)
 
