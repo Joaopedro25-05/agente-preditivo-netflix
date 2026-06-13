@@ -1,10 +1,33 @@
+# Ambiente virtual
 venv/
+.venv/
+
+# Cache Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Variáveis de ambiente e chaves
 .env
+.env.local
+
+# Jupyter
 .ipynb_checkpoints/
+
+# Dados processados gerados automaticamente
 data/processed/
+
+# Artefatos pesados/gerados
 artifacts/*.joblib
 artifacts/*.pkl
+
+# Arquivos temporários do sistema
 .DS_Store
+Thumbs.db
+
+# Configurações locais do VS Code
 .vscode/
+
+# Cache Streamlit
+.streamlit/
