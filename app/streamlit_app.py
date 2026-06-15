@@ -49,6 +49,14 @@ user_message = st.chat_input("Digite sua pergunta sobre o dataset ou o projeto..
 
 
 if user_message:
+    history_for_api = [
+        {
+            "role": message["role"],
+            "content": message["content"],
+        }
+        for message in st.session_state.messages[-10:]
+    ]
+
     st.session_state.messages.append(
         {
             "role": "user",
@@ -63,32 +71,31 @@ if user_message:
         with st.spinner("Consultando agente especialista..."):
             response = requests.post(
                 API_CHAT_URL,
-                json={"message": user_message},
+                json={
+                    "message": user_message,
+                    "history": history_for_api,
+                },
                 timeout=60,
             )
 
         if response.status_code == 200:
             assistant_response = response.json().get(
                 "response",
-                "Não foi possível obter uma resposta do agente.",
+                "A API não retornou uma resposta válida.",
             )
         else:
             assistant_response = (
-                "A API retornou um erro ao consultar o agente especialista.\n\n"
-                f"Detalhes: {response.text}"
+                f"A API retornou um erro: {response.status_code} - {response.text}"
             )
 
     except requests.exceptions.ConnectionError:
         assistant_response = (
             "Não foi possível conectar à API. "
-            "Verifique se o backend FastAPI está rodando em http://127.0.0.1:8000."
+            "Verifique se o FastAPI está rodando em http://127.0.0.1:8000."
         )
 
     except requests.exceptions.Timeout:
-        assistant_response = (
-            "A requisição demorou demais para responder. "
-            "Tente novamente em alguns instantes."
-        )
+        assistant_response = "A requisição demorou demais para responder."
 
     except Exception as error:
         assistant_response = f"Erro inesperado: {error}"

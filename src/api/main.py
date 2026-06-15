@@ -75,16 +75,14 @@ class PredictionResponse(BaseModel):
     input_data: dict[str, Any]
     explanation: str
 
-class ChatRequest(BaseModel):
-    """
-    Mensagem enviada pelo usuário ao agente especialista.
-    """
+class ChatMessage(BaseModel):
+    role: str
+    content: str
 
-    message: str = Field(
-        ...,
-        min_length=1,
-        description="Pergunta do usuário sobre o dataset ou sobre o projeto.",
-    )
+
+class ChatRequest(BaseModel):
+    message: str
+    history: list[ChatMessage] = []
 
 
 class ChatResponse(BaseModel):
@@ -161,28 +159,22 @@ def predict(request: PredictionRequest) -> dict:
         ) from error
     
 @app.post("/chat", response_model=ChatResponse)
-def chat(request: ChatRequest) -> dict:
-    """
-    Recebe uma pergunta do usuário e retorna uma resposta do agente especialista.
-
-    O agente deve responder apenas sobre:
-    - dataset Netflix Movies and TV Shows;
-    - colunas da base;
-    - variável alvo;
-    - pré-processamento;
-    - modelos treinados;
-    - métricas;
-    - funcionamento da solução.
-    """
+def chat(request: ChatRequest):
     try:
-        response = generate_dataset_chat_response(request.message)
+        history = [
+            {
+                "role": message.role,
+                "content": message.content,
+            }
+            for message in request.history
+        ]
 
-        return {
-            "response": response,
-        }
+        response = generate_dataset_chat_response(
+            user_question=request.message,
+            history=history,
+        )
+
+        return ChatResponse(response=response)
 
     except Exception as error:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Erro inesperado ao consultar o agente especialista: {error}",
-        ) from error
+        raise HTTPException(status_code=500, detail=str(error))
