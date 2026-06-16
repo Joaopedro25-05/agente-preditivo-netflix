@@ -31,3 +31,4 @@ Thumbs.db
 
 # Cache Streamlit
 .streamlit/
+artifacts/query_interpretation_cache.json
